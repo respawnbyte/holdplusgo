@@ -1,4 +1,4 @@
-TARGET = hold
+TARGET = holdplusgo
 OBJS = import.o main.o sysconhk.o exports.o
 
 INCDIR = ../include
