@@ -1,3 +1,24 @@
+Hold+Go v1
+Tested on 
+- Based on Hold+ v4.0 from Torch
+
+A simple modification to use the Hold+ Plugin with the PSP Go.
+If the PSP Go is closed the SELECT Button is not reachable.
+So the idea was to use the HOME Button instead.
+
+Maybe adding some other feateures in future.
+
+Let's revive the best Portable Console ever made!
+
+
+Greetings,
+respwanbyte
+
+
+
+_____________________________
+// Original readme till v4 //
+-----------------------------
 Hold+ v4.0
 Author: Torch
 
