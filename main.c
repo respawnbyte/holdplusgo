@@ -40,7 +40,7 @@ u32 holdflags = 0;
 int tb, model;
 
 int (* vshCtrlReadBufferPositive)(SceCtrlData *pad_data, int count);
-int OnModuleStart(SceModule2 *mod);
+int OnModuleStart(SceModule *mod);
 u32 orgaddr;
 STMOD_HANDLER previous = NULL;
 unsigned char up=0, dn=0, patched=0;
@@ -112,7 +112,7 @@ int vshCtrlReadBufferPositive_Patched(SceCtrlData *pad_data, int count)
 	return(ret);
 }
 
-int OnModuleStart(SceModule2 *mod)
+int OnModuleStart(SceModule *mod)
 {
 	if (strcmp(mod->modname, "music_browser_module") == 0)
 	{
@@ -120,7 +120,7 @@ int OnModuleStart(SceModule2 *mod)
 		{
 			orgaddr = sctrlHENFindFunction("sceVshBridge_Driver", "sceVshBridge", 0xC6395C03);
 			vshCtrlReadBufferPositive = (void *)orgaddr;
-			sctrlHENPatchSyscall(orgaddr, vshCtrlReadBufferPositive_Patched);
+			sctrlHENPatchSyscall((void *)orgaddr, vshCtrlReadBufferPositive_Patched);
 
 			sceKernelDcacheWritebackAll();
 			sceKernelIcacheClearAll();
@@ -131,7 +131,7 @@ int OnModuleStart(SceModule2 *mod)
 	{
 		if (patched)
 		{
-			sctrlHENPatchSyscall((u32)vshCtrlReadBufferPositive_Patched, (void *)orgaddr);
+			sctrlHENPatchSyscall((void *)vshCtrlReadBufferPositive_Patched, (void *)orgaddr);
 
 			sceKernelDcacheWritebackAll();
 			sceKernelIcacheClearAll();
@@ -421,16 +421,15 @@ SYSCON_CTRL_TRIANGLE|\
 SYSCON_CTRL_CIRCLE|\
 SYSCON_CTRL_CROSS|\
 SYSCON_CTRL_RECTANGLE|\
-SYSCON_CTRL_HOME|\
 SYSCON_CTRL_LCD|\
 SYSCON_CTRL_NOTE\
 )
 
 		if (newButtons & SYSCON_CTRL_HOLD)
 		{
-			if(((newButtons & SYSCON_CTRL_SELECT) && (newButtons & HOLD_KEYS) && !(newButtons & HOLD_KEYS_MASK)) || volup_extra || voldn_extra)
+			if(((newButtons & SYSCON_CTRL_HOME) && (newButtons & HOLD_KEYS) && !(newButtons & HOLD_KEYS_MASK)) || volup_extra || voldn_extra)
 			{
-				newButtons &= ~(SYSCON_CTRL_HOLD | SYSCON_CTRL_SELECT);
+				newButtons &= ~(SYSCON_CTRL_HOLD | SYSCON_CTRL_HOME);
 
 				if (((prevButtons^newButtons) & SYSCON_CTRL_VOL_UP) && (newButtons & SYSCON_CTRL_VOL_UP))
 				{
@@ -482,7 +481,7 @@ int module_stop(SceSize args, void *argp)
 
 	if (patched)
 	{
-		sctrlHENPatchSyscall((u32)vshCtrlReadBufferPositive_Patched, (void *)orgaddr);
+		sctrlHENPatchSyscall((void *)vshCtrlReadBufferPositive_Patched, (void *)orgaddr);
 
 		sceKernelDcacheWritebackAll();
 		sceKernelIcacheClearAll();
